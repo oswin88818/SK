@@ -2,43 +2,46 @@ name: Build SkipCutscene (Dalamud API 12)
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
-  workflow_dispatch: {}
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Setup .NET 9
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: "9.0.x"
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
 
-    - name: Restore dependencies
-      run: dotnet restore
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: Build (Release)
-      run: dotnet build SkipCutscene.sln -c Release --no-restore
+      - name: Build (Release)
+        run: dotnet build SkipCutscene.sln -c Release --no-restore
 
-    - name: Package outputs
-      run: |
-        mkdir out
-        echo "Copy SkipCutscene.dll"
-        copy SkipCutscene\bin\Release\net9.0-windows7.0\SkipCutscene.dll out\
+      - name: Package outputs
+        shell: cmd
+        run: |
+          mkdir out
+          echo Copy SkipCutscene.dll
+          copy SkipCutscene\bin\Release\net9.0-windows7.0\SkipCutscene.dll out\
 
-        echo "Copy latest.zip (if exists)"
-        if exist SkipCutscene\bin\Release\net9.0-windows7.0\latest.zip (
-            copy SkipCutscene\bin\Release\net9.0-windows7.0\latest.zip out\
-        )
+          echo Copy latest.zip (if exists)
+          if exist SkipCutscene\bin\Release\net9.0-windows7.0\latest.zip (
+              copy SkipCutscene\bin\Release\net9.0-windows7.0\latest.zip out\
+          )
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: SkipCutscene-Build
-        path: out
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SkipCutscene-Build
+          path: out
